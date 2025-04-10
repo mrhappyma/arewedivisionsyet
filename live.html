@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mmm divisions</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        background-color: #fff;
+        transition: background-color 0.5s ease;
+      }
+      #text {
+        font-size: 10vw;
+        margin: 0;
+        text-align: center;
+        color: black;
+      }
+      #notice {
+        color: #fff;
+      }
+      #status {
+        color: limegreen;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="text">loading</h1>
+    <p id="status"></p>
+    <p id="notice">click somewhere so audio works :)</p>
+
+    <script>
+      document.body.addEventListener("click", () => {
+        const notice = document.getElementById("notice");
+        if (notice) document.getElementById("notice").remove();
+      });
+
+      const team = window.location.pathname.split("/").pop();
+      const socket = new WebSocket(`/socket/${team}`);
+
+      let gotMessage = false;
+
+      socket.onmessage = (event) => {
+        gotMessage = true;
+
+        const division = JSON.parse(event.data).division;
+        document.getElementById("text").innerHTML = division;
+        document.getElementById("text").style.color = "white";
+        document.body.style.backgroundColor = "green";
+
+        var audio = new Audio("trumpet.mp3");
+        audio.play();
+      };
+
+      socket.onopen = () => {
+        document.getElementById("text").innerHTML = "soon?";
+        document.getElementById("text").style.color = "white";
+        document.body.style.backgroundColor = "black";
+
+        document.getElementById("status").innerHTML = "connected";
+      };
+
+      socket.onclose = () => {
+        document.getElementById("status").innerHTML = "";
+
+        if (gotMessage) return;
+        document.getElementById("text").innerHTML = "disconnected";
+        document.getElementById("text").style.color = "red";
+        document.body.style.backgroundColor = "black";
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        document.getElementById("text").innerHTML = "error (check console)";
+        document.getElementById("text").style.color = "red";
+        document.body.style.backgroundColor = "black";
+
+        document.getElementById("status").innerHTML = "";
+      };
+    </script>
+  </body>
+</html>
