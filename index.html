@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mmm divisions</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        transition: background-color 0.5s ease;
+      }
+      #text {
+        font-size: 10vw;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+        color: black;
+      }
+      #notice {
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="text">loading</h1>
+    <p id="notice">click somewhere so audio works :)</p>
+
+    <script>
+      const getEvents = async () => {
+        const teaminfo = await fetch("/api/data");
+        const data = await teaminfo.json();
+
+        if (data[0]?.code) {
+          document.getElementById("text").innerHTML = data[0].code;
+          document.getElementById("text").style.color = "white";
+          document.body.style.backgroundColor = "green";
+
+          var audio = new Audio("trumpet.mp3");
+          audio.play({ loop: true });
+        } else {
+          document.getElementById("text").innerHTML = "soon";
+          document.getElementById("text").style.color = "white";
+          document.body.style.backgroundColor = "black";
+        }
+      };
+
+      document.body.addEventListener("click", () => {
+        const notice = document.getElementById("notice");
+        if (notice) document.getElementById("notice").remove();
+      });
+
+      getEvents();
+      setInterval(getEvents, 1000);
+    </script>
+  </body>
+</html>
