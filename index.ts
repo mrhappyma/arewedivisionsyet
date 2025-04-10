@@ -6,7 +6,9 @@ const trumpet = Bun.file("trumpet.mp3");
 const year = 2025;
 const token = btoa(`${env.username}:${env.token}`);
 
+let divisions = false;
 const divisionsLive = async () => {
+  if (divisions) return true;
   const events = await fetch(
     `https://frc-api.firstinspires.org/v3.0/${year}/teams/?eventCode=archimedes`,
     {
@@ -17,7 +19,12 @@ const divisionsLive = async () => {
     }
   );
   const data = await events.json();
-  return data.teamCountTotal > 0;
+  const gotDivisions = data.teamCountTotal > 0;
+  if (gotDivisions) {
+    console.log("HALELUJAH");
+    divisions = true;
+  }
+  return gotDivisions;
 };
 
 const getTeamDivision = async (teamNumber: number) => {
