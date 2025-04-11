@@ -55,6 +55,7 @@ setInterval(async () => {
   const out = await divisionsLive();
   if (!out) return;
   for (const [id, ws] of sockets.entries()) {
+    ws.ping();
     const division = await getTeamDivision(ws.data.teamNumber);
     if (division) {
       ws.send(JSON.stringify({ division }));
@@ -68,7 +69,6 @@ setInterval(async () => {
 Bun.serve({
   websocket: {
     open(ws: Bun.ServerWebSocket<{ teamNumber: number; id: string }>) {
-      console.log("WebSocket opened");
       sockets.set(ws.data.id, ws);
       console.log(`WebSocket opened for team ${ws.data.teamNumber}`);
     },
