@@ -53,9 +53,9 @@ const sockets = new Map<string, Bun.ServerWebSocket<{ teamNumber: number }>>();
 setInterval(async () => {
   console.log(`${sockets.size} sockets connected`);
   const out = await divisionsLive();
-  if (!out) return;
   for (const [id, ws] of sockets.entries()) {
     ws.ping();
+    if (!out) continue;
     const division = await getTeamDivision(ws.data.teamNumber);
     if (division) {
       ws.send(JSON.stringify({ division }));
@@ -64,7 +64,7 @@ setInterval(async () => {
     }
     ws.close();
   }
-}, 1000);
+}, 2000);
 
 Bun.serve({
   websocket: {
